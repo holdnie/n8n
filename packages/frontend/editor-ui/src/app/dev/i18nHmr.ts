@@ -3,7 +3,7 @@ import type { LocaleMessages } from '@n8n/i18n/types';
 import { locale as designLocale } from '@n8n/design-system';
 
 const hot = import.meta.hot;
-const DEFAULT_LOCALE = 'en';
+const DEFAULT_LOCALE = 'zh-CN';
 
 if (hot) {
 	// Eagerly import locale JSONs so this module becomes their HMR owner

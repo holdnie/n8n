@@ -4,6 +4,8 @@ import { ref } from 'vue';
 import { createI18n } from 'vue-i18n';
 
 import englishBaseText from './locales/en.json';
+// add zh-CN
+import cnBaseText from '../../../../../packages-sw/frontend/@n8n/i18n/src/locales/zh-CN.json';
 import type { BaseTextKey, LocaleMessages, INodeTranslationHeaders } from './types';
 import {
 	deriveMiddleKey,
@@ -14,11 +16,12 @@ import {
 
 export type * from './types';
 
+// default zh-CN
 export const i18nInstance = createI18n({
 	legacy: false,
-	locale: 'en',
+	locale: 'zh-CN',
 	fallbackLocale: 'en',
-	messages: { en: englishBaseText },
+	messages: { en: englishBaseText, 'zh-CN': cnBaseText },
 	warnHtmlMessage: false,
 });
 
