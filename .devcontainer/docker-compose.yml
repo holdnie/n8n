@@ -1,24 +1,57 @@
 volumes:
-  postgres-data:
+  n8n-workspace:
+  n8n-node-modules:
+  n8n-pnpm-store:
+  n8n-user-data:
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=n8n
-      - POSTGRES_PASSWORD=password
-
   n8n:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    user: "1000:1000"
     volumes:
-      - ..:/workspaces:cached
+      - n8n-workspace:/workspaces
+      - n8n-node-modules:/workspaces/node_modules
+      - n8n-pnpm-store:/pnpm-store
+      - n8n-user-data:/home/node/.n8n
     command: sleep infinity
     environment:
-      DB_POSTGRESDB_HOST: postgres
-      DB_TYPE: postgresdb
-      DB_POSTGRESDB_PASSWORD: password
+      # --- 数据库配置 (PostgreSQL) ---
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=192.168.101.188
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n_db_dev
+      - DB_POSTGRESDB_USER=siwaymap
+      - DB_POSTGRESDB_PASSWORD=123456
+
+      # --- Redis 缓存配置 ---
+      - QUEUE_BULL_REDIS_HOST=192.168.101.151
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=7
+      - QUEUE_BULL_REDIS_PASSWORD=A123!qazWSX@
+
+      # --- 安全与内部访问 ---
+      - N8N_SECURE_COOKIE=false
+
+      # --- 基础设置 ---
+      - N8N_DEFAULT_LOCALE=zh-CN
+      - GENERIC_TIMEZONE=Asia/Shanghai
+      - TZ=Asia/Shanghai
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    depends_on:
+      - volume-init
+
+  volume-init:
+    image: alpine
+    command: >
+      sh -c "
+        mkdir -p /workspaces /workspaces/node_modules /pnpm-store /home/node/.n8n &&
+        chown -R 1000:1000 /workspaces /pnpm-store /home/node/.n8n
+      "
+    volumes:
+      - n8n-workspace:/workspaces
+      - n8n-node-modules:/workspaces/node_modules
+      - n8n-pnpm-store:/pnpm-store
+      - n8n-user-data:/home/node/.n8n

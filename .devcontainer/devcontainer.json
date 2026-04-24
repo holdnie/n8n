@@ -4,16 +4,25 @@
 	"service": "n8n",
 	"workspaceFolder": "/workspaces",
 	"mounts": [
-		"type=bind,source=${localWorkspaceFolder},target=/workspaces,consistency=cached",
+		"type=bind,source=${localWorkspaceFolder},target=/workspaces_host,consistency=cached",
 		"type=bind,source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,consistency=cached",
-		"type=bind,source=${localEnv:HOME}/.n8n,target=/home/node/.n8n,consistency=cached"
+		"type=volume,source=n8n-user-data,target=/home/node/.n8n",
+		"type=volume,source=n8n-workspace,target=/workspaces",
+		"type=volume,source=n8n-node-modules,target=/workspaces/node_modules",
+		"type=volume,source=n8n-pnpm-store,target=/pnpm-store"
 	],
-	"forwardPorts": [8080, 5678],
-	"postCreateCommand": "corepack prepare --activate && pnpm install",
-	"postAttachCommand": "pnpm build",
+	"containerEnv": {},
+	"forwardPorts": [
+		8080,
+		5678
+	],
+	"postCreateCommand": "echo '[devcontainer] sync from host → container' && rsync -a --delete --filter=':- .gitignore' --exclude '.devcontainer' --exclude '.github' --exclude '.vscode' --exclude 'node_modules' --exclude 'dist' --exclude '.pnpm-store' /workspaces_host/ /workspaces/ && if [ ! -d /workspaces/node_modules/.pnpm ]; then corepack prepare --activate && pnpm install; fi",
+	"postAttachCommand": "if [ ! -d /workspaces/packages/frontend/editor-ui/dist ]; then pnpm build; fi",
 	"customizations": {
 		"codespaces": {
-			"openFiles": ["CONTRIBUTING.md"]
+			"openFiles": [
+				"CONTRIBUTING.md"
+			]
 		}
 	}
 }

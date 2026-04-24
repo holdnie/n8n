@@ -12,6 +12,7 @@ _START_PACKAGE
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.default.json
+!.vscode/settings.json
 .idea
 nodelinter.config.json
 **/package-lock.json
@@ -45,3 +46,8 @@ packages/cli/THIRD_PARTY_LICENSES.md
 .nyc_output
 packages/cli/src/commands/export/outputs
 *.bak
+
+.github
+.github/*
+
+.rsync-backup

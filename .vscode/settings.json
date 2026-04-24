@@ -1,0 +1,10 @@
+{
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        // "match": ".*",
+        // "cmd": "/usr/local/bin/sync-back.sh"
+      }
+    ]
+  }
+}
